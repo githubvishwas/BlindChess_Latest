@@ -1,7 +1,17 @@
+var START = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+var _engine, _curmoves = [];
+var _history = [[START]], _history2 = null, _historyindex = 0;
+var _flip = false, _edit = false, _info = false, _play = null;
+var _arrow = false, _menu = false;
+var _dragElement = null, _dragActive = false, _startX, _startY, _dragCtrl, _dragLMB, _clickFrom, _clickFromElem;
+var _tooltipState = false, _wantUpdateInfo = true;;
+var _wname = "White", _bname = "Black", _color = 0, _bodyScale = 1;
+var _nncache = null;
+
 var board,
   game = new Chess(),
   statusEl = $('#status'),
-  fenEl = $('#fen'),
+  //fenEl = $('#fen'),
   pgnEl = $('#pgn'),
   toggleEI = $('#toggle'),
   colorsEI = $('#col1');
@@ -13,181 +23,16 @@ var board,
 // do not pick up pieces if the game is over
 // only pick up pieces for the side to move
 
-var minimaxRoot =function(depth, game, isMaximisingPlayer) {
-
-    var newGameMoves = game.ugly_moves();
-    var bestMove = -9999;
-    var bestMoveFound;
-
-    for(var i = 0; i < newGameMoves.length; i++) {
-        var newGameMove = newGameMoves[i]
-        game.ugly_move(newGameMove);
-        var value = minimax(depth - 1, game, -10000, 10000, !isMaximisingPlayer);
-        game.undo();
-        if(value >= bestMove) {
-            bestMove = value;
-            bestMoveFound = newGameMove;
-        }
-    }
-    return bestMoveFound;
-};
-
-var minimax = function (depth, game, alpha, beta, isMaximisingPlayer) {
-    positionCount++;
-    if (depth === 0) {
-        return -evaluateBoard(game.board());
-    }
-
-    var newGameMoves = game.ugly_moves();
-
-    if (isMaximisingPlayer) {
-        var bestMove = -9999;
-        for (var i = 0; i < newGameMoves.length; i++) {
-            game.ugly_move(newGameMoves[i]);
-            bestMove = Math.max(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
-            game.undo();
-            alpha = Math.max(alpha, bestMove);
-            if (beta <= alpha) {
-                return bestMove;
-            }
-        }
-        return bestMove;
-    } else {
-        var bestMove = 9999;
-        for (var i = 0; i < newGameMoves.length; i++) {
-            game.ugly_move(newGameMoves[i]);
-            bestMove = Math.min(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
-            game.undo();
-            beta = Math.min(beta, bestMove);
-            if (beta <= alpha) {
-                return bestMove;
-            }
-        }
-        return bestMove;
-    }
-};
-
-var evaluateBoard = function (board) {
-    var totalEvaluation = 0;
-    for (var i = 0; i < 8; i++) {
-        for (var j = 0; j < 8; j++) {
-            totalEvaluation = totalEvaluation + getPieceValue(board[i][j], i ,j);
-        }
-    }
-    return totalEvaluation;
-};
-
-var reverseArray = function(array) {
-    return array.slice().reverse();
-};
-
-var pawnEvalWhite =
-    [
-        [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
-        [5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0],
-        [1.0,  1.0,  2.0,  3.0,  3.0,  2.0,  1.0,  1.0],
-        [0.5,  0.5,  1.0,  2.5,  2.5,  1.0,  0.5,  0.5],
-        [0.0,  0.0,  0.0,  2.0,  2.0,  0.0,  0.0,  0.0],
-        [0.5, -0.5, -1.0,  0.0,  0.0, -1.0, -0.5,  0.5],
-        [0.5,  1.0, 1.0,  -2.0, -2.0,  1.0,  1.0,  0.5],
-        [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0]
-    ];
-
-var pawnEvalBlack = reverseArray(pawnEvalWhite);
-
-var knightEval =
-    [
-        [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0],
-        [-4.0, -2.0,  0.0,  0.0,  0.0,  0.0, -2.0, -4.0],
-        [-3.0,  0.0,  1.0,  1.5,  1.5,  1.0,  0.0, -3.0],
-        [-3.0,  0.5,  1.5,  2.0,  2.0,  1.5,  0.5, -3.0],
-        [-3.0,  0.0,  1.5,  2.0,  2.0,  1.5,  0.0, -3.0],
-        [-3.0,  0.5,  1.0,  1.5,  1.5,  1.0,  0.5, -3.0],
-        [-4.0, -2.0,  0.0,  0.5,  0.5,  0.0, -2.0, -4.0],
-        [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0]
-    ];
-
-var bishopEvalWhite = [
-    [ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0],
-    [ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0],
-    [ -1.0,  0.0,  0.5,  1.0,  1.0,  0.5,  0.0, -1.0],
-    [ -1.0,  0.5,  0.5,  1.0,  1.0,  0.5,  0.5, -1.0],
-    [ -1.0,  0.0,  1.0,  1.0,  1.0,  1.0,  0.0, -1.0],
-    [ -1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0, -1.0],
-    [ -1.0,  0.5,  0.0,  0.0,  0.0,  0.0,  0.5, -1.0],
-    [ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0]
-];
-
-var bishopEvalBlack = reverseArray(bishopEvalWhite);
-
-var rookEvalWhite = [
-    [  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
-    [  0.5,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  0.5],
-    [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
-    [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
-    [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
-    [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
-    [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
-    [  0.0,   0.0, 0.0,  0.5,  0.5,  0.0,  0.0,  0.0]
-];
-
-var rookEvalBlack = reverseArray(rookEvalWhite);
-
-var evalQueen = [
-    [ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0],
-    [ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0],
-    [ -1.0,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -1.0],
-    [ -0.5,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -0.5],
-    [  0.0,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -0.5],
-    [ -1.0,  0.5,  0.5,  0.5,  0.5,  0.5,  0.0, -1.0],
-    [ -1.0,  0.0,  0.5,  0.0,  0.0,  0.0,  0.0, -1.0],
-    [ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0]
-];
-
-var kingEvalWhite = [
-
-    [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
-    [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
-    [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
-    [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
-    [ -2.0, -3.0, -3.0, -4.0, -4.0, -3.0, -3.0, -2.0],
-    [ -1.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -1.0],
-    [  2.0,  2.0,  0.0,  0.0,  0.0,  0.0,  2.0,  2.0 ],
-    [  2.0,  3.0,  1.0,  0.0,  0.0,  1.0,  3.0,  2.0 ]
-];
-
-var kingEvalBlack = reverseArray(kingEvalWhite);
 
 
 
 
-var getPieceValue = function (piece, x, y) {
-    if (piece === null) {
-        return 0;
-    }
-    var getAbsoluteValue = function (piece, isWhite, x ,y) {
-        if (piece.type === 'p') {
-            return 10 + ( isWhite ? pawnEvalWhite[y][x] : pawnEvalBlack[y][x] );
-        } else if (piece.type === 'r') {
-            return 50 + ( isWhite ? rookEvalWhite[y][x] : rookEvalBlack[y][x] );
-        } else if (piece.type === 'n') {
-            return 30 + knightEval[y][x];
-        } else if (piece.type === 'b') {
-            return 30 + ( isWhite ? bishopEvalWhite[y][x] : bishopEvalBlack[y][x] );
-        } else if (piece.type === 'q') {
-            return 90 + evalQueen[y][x];
-        } else if (piece.type === 'k') {
-            return 900 + ( isWhite ? kingEvalWhite[y][x] : kingEvalBlack[y][x] );
-        }
-        throw "Unknown piece type: " + piece.type;
-    };
 
-    var absoluteValue = getAbsoluteValue(piece, piece.color === 'w', x ,y);
-    return piece.color === 'w' ? absoluteValue : -absoluteValue;
-};
+
+
 
 var getMove = function () {
-	//renderMoveHistory(game.history());
+	
     window.setTimeout(makeBestMove, 250);
 };
 var onDragStart = function(source, piece, position, orientation) {
@@ -210,8 +55,7 @@ var onDrop = function(source, target) {
   if (move === null) return 'snapback';
 
   updateStatus();
-  //getResponseMove();
-  //renderMoveHistory(game.history());
+
     window.setTimeout(makeBestMove, 250);
 };
 var makeWhiteFirstRandomMove = function () {
@@ -220,51 +64,31 @@ var makeWhiteFirstRandomMove = function () {
 	game.move(move);
     board.position(game.fen());
 	updateStatus();
-   // renderMoveHistory(game.history());
+   
     if (game.game_over()) {
         alert('Game over');
     }
 };
 var makeBestMove = function () {
-    var bestMove = getBestMove(game);
-    game.ugly_move(bestMove);
-    board.position(game.fen());
-	updateStatus();
-   // renderMoveHistory(game.history());
-    if (game.game_over()) {
-        alert('Game over');
-    }
-};
-var positionCount;
-var getBestMove = function (game) {
     if (game.game_over()) {
         alert('Game over');
     }
 
     positionCount = 0;
     //var depth = parseInt($('#search-depth').find(':selected').text());
-	var e = document.getElementById("sel1");
-	var depth = e.options[e.selectedIndex].value;
-    var d = new Date().getTime();
-    var bestMove = minimaxRoot(depth, game, true);
-    var d2 = new Date().getTime();
-    var moveTime = (d2 - d);
-    var positionsPerS = ( positionCount * 1000 / moveTime);
-
-    $('#position-count').text(positionCount);
-    $('#time').text(moveTime/1000 + 's');
-    $('#positions-per-s').text(positionsPerS);
-    return bestMove;
-};
-var renderMoveHistory = function (moves) {
-    var historyElement = $('#move-history').empty();
-    historyElement.empty();
-    for (var i = 0; i < moves.length; i = i + 2) {
-        historyElement.append('<span>' + moves[i] + ' ' + ( moves[i + 1] ? moves[i + 1] : ' ') + '</span><br>')
+	
+	
+	makeEngineMove(1)
+    board.position(game.fen());
+	updateStatus();
+   
+    if (game.game_over()) {
+        alert('Game over');
     }
-    historyElement.scrollTop(historyElement[0].scrollHeight);
-
 };
+
+
+
 // update the board position after the piece snap
 // for castling, en passant, pawn promotion
 var onSnapEnd = function() {
@@ -300,12 +124,13 @@ var updateStatus = function() {
   }
 
   setStatus(status);
-  getLastCapture();
-  createTable();
-  updateScroll();
+  
+  //createTable();
+  //updateScroll();
 
   statusEl.html(status);
-  fenEl.html(game.fen());
+  //fenEl.html(game.fen());
+  
   pgnEl.html(game.pgn());
   board.position(game.fen());
 };
@@ -319,28 +144,9 @@ var cfg = {
   orientation: elem.options[elem.selectedIndex].value
 };
 
-var randomResponse = function() {
-    fen = game.fen()
-    $.get($SCRIPT_ROOT + "/move/" + fen, function(data) {
-        game.move(data, {sloppy: true});
-//        board.position(game.fen());
-        updateStatus();
-    })
-}
 
-var getResponseMove = function() {
-    var e = document.getElementById("sel1");
-    var depth = e.options[e.selectedIndex].value;
-    fen = game.fen()
-    //console.log($SCRIPT_ROOT + "/move/" + depth + "/" + fen)
-    $.get($SCRIPT_ROOT + "/move/" + depth + "/" + fen, function(data) {
-        game.move(data, {sloppy: true});
-        updateStatus();
-        // This is terrible and I should feel bad. Find some way to fix this properly.
-        // The animations would stutter when moves were returned too quick, so I added a 100ms delay before the animation
-        setTimeout(function(){ board.position(game.fen()); }, 100);
-    })
-}
+
+
 
 
 // did this based on a stackoverflow answer
@@ -352,12 +158,7 @@ setTimeout(function() {
 }, 0);
 
 
-var setPGN = function() {
-  var table = document.getElementById("pgn");
 
-  var pgn = game.pgn().split(" ");
-    var move = pgn[pgn.length - 1];
-}
 
 var createTable = function() {
 
@@ -429,28 +230,100 @@ var newGame = function() {
     updateStatus();
 }
 
-var getCapturedPieces = function() {
-    var history = game.history({ verbose: true });
-    for (var i = 0; i < history.length; i++) {
-        if ("captured" in history[i]) {
-            if (history[index] === null) {
-                continue;
-            }
-            console.log(history[i]["captured"]);
-        }
-    }
-}
 
-var getLastCapture = function() {
-    var history = game.history({ verbose: true });
-    var index = history.length - 1;
-    if (history[index] === undefined) {
-        return;
+function loadEngine() {
+  var engine = {ready: false, kill: false, waiting: true, depth: 10, lastnodes: 0};
+  var wasmSupported = typeof WebAssembly === 'object' && WebAssembly.validate(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
+  if (typeof(Worker) === "undefined") return engine;
+  var workerData = new Blob([atob(wasmSupported ? sfWasm : sf)], { type: "text/javascript" });
+  try { var worker = new Worker(window.URL.createObjectURL(workerData )); }
+  catch(err) { return engine; }
+  worker.onmessage = function (e) { if (engine.messagefunc) engine.messagefunc(e.data); }
+  engine.send = function send(cmd, message) {
+    cmd = String(cmd).trim();
+    engine.messagefunc = message;
+    worker.postMessage(cmd);
+  };
+  engine.eval = function eval(fen, done, info) {
+    engine.send("position fen " + fen);
+    engine.send("go depth "+ engine.depth, function message(str) {
+      var matches = str.match(/depth (\d+) .*score (cp|mate) ([-\d]+) .*nodes (\d+) .*pv (.+)/);
+      if (!matches) matches = str.match(/depth (\d+) .*score (cp|mate) ([-\d]+).*/);
+      if (matches) {
+        if (engine.lastnodes == 0) engine.fen = fen;
+        if (matches.length > 4) {
+          var nodes = Number(matches[4]);
+          if (nodes < engine.lastnodes) engine.fen = fen;
+          engine.lastnodes = nodes;
+        }
+        var depth = Number(matches[1]);
+        var type = matches[2];
+        var score = Number(matches[3]);
+        if (type == "mate") score = (1000000 - Math.abs(score)) * (score <= 0 ? -1 : 1);
+        engine.score = score;
+        if (matches.length > 5) {
+          var pv = matches[5].split(" ");
+          if (info != null && engine.fen == fen) info(depth, score, pv);
+        }
+      }
+      if (str.indexOf("bestmove") >= 0 || str.indexOf("mate 0") >= 0 || str == "info depth 0 score cp 0") {
+        if (engine.fen == fen) done(str);
+        engine.lastnodes = 0;
+      }
+    });
+  };
+  engine.send("uci", function onuci(str) {
+    if (str === "uciok") {
+      engine.send("isready", function onready(str) {
+        if (str === "readyok") engine.ready = true;
+      });
     }
-    if ("captured" in history[index]) {
-        console.log(history[index]["captured"]);
-    }
+  });
+  return engine;
 }
+function makeEngineMove (makeMove) {
+	_engine.kill = false;
+	_engine.waiting = false;
+	_engine.send("stop");
+	_engine.send("ucinewgame");
+	var e = document.getElementById("sel1");
+	var level = e.options[e.selectedIndex].value;
+	_engine.send("setoption name Skill Level value " + level); 
+	_engine.score = null;
+	_engine.eval(game.fen(), function done(str) {
+	  _engine.waiting = true;
+	  
+	  var matches = str.match(/^bestmove\s(\S+)(?:\sponder\s(\S+))?/);
+	  if (matches && matches.length > 1) {
+		var source  = matches[1][0] + matches[1][1] 
+		var target  = matches[1][2] + matches[1][3]  
+		//console.log(source)
+		//console.log(target)
+		if(makeMove == 1) {
+			var move = game.move({
+			from: source,
+			to: target,
+			promotion: 'q' // NOTE: always promote to a queen for example simplicity
+		  })
+
+		  // illegal move
+		  if (move === null) return 'snapback'
+		  board.position(game.fen())
+		  updateStatus()
+		  //console.log(getStaticEvalList(game.fen()))
+		}
+		
+	  }
+	},function info(depth, score, pv) {
+        if(depth == 10) {
+			console.log(score)
+			//document.getElementById("cpscore").innerHTML = " CP score: " + score/100;
+		}
+      });
+	
+	
+}
+_engine = loadEngine();
 
 
 
