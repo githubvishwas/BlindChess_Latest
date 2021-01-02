@@ -140,7 +140,7 @@ function Undo() {
 		return
 	}
 	updateStatus();
-	moveAudio.play()
+	//moveAudio.play()
 	//getResponseMove();
 	getMove()
 	ClearMove()
@@ -293,12 +293,12 @@ var updateStatus = function() {
 
   // checkmate?
   if (game.in_checkmate() === true) {
-    status = 'Game over, ' + moveColor + ' is in checkmate.';
+    alert('Game over, ' + moveColor + ' is in checkmate.')
   }
 
   // draw?
   else if (game.in_draw() === true) {
-    status = 'Game over, drawn position';
+    alert('Game over, drawn position')
   }
 
   // game still on
