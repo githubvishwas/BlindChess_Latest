@@ -7,33 +7,221 @@ var _dragElement = null, _dragActive = false, _startX, _startY, _dragCtrl, _drag
 var _tooltipState = false, _wantUpdateInfo = true;;
 var _wname = "White", _bname = "Black", _color = 0, _bodyScale = 1;
 var _nncache = null;
-
+var moveAN = ""
+const moveAudio = new Audio('sounds/Move.mp3');
 var board,
   game = new Chess(),
-  statusEl = $('#status'),
-  //fenEl = $('#fen'),
   pgnEl = $('#pgn'),
   toggleEI = $('#toggle'),
+  sdepth = 10,
   colorsEI = $('#col1');
-  console.log("this is new code10");
+  
   var elem = document.getElementById('col1');
-  console.log(elem.selectedIndex);
+  //console.log(elem.selectedIndex);
 //document.getElementById("status").innerHTML = "this is new code";
 
 // do not pick up pieces if the game is over
 // only pick up pieces for the side to move
+var SQUARES = {
+           0:"a8",    1:"b8",    2:"c8",    3:"d8",    4:"e8",    5:"f8",    6:"g8",    7:"h8",
+          16:"a7",   17:"b7",   18:"c7",   19:"d7",   20:"e7",   21:"f7",   22:"g7",   23:"h7",
+          32:"a6",   33:"b6",   34:"c6",   35:"d6",   36:"e6",   37:"f6",   38:"g6",   39:"h6",
+          48:"a5",   49:"b5",   50:"c5",   51:"d5",   52:"e5",   53:"f5",   54:"g5",   55:"h5",
+          64:"a4",   65:"b4",   66:"c4",   67:"d4",   68:"e4",   69:"f4",   70:"g4",   71:"h4",
+          80:"a3",   81:"b3",   82:"c3",   83:"d3",   84:"e3",   85:"f3",   86:"g3",   87:"h3",
+          96:"a2",   97:"b2",   98:"c2",   99:"d2",  100:"e2",  101:"f2",  102:"g2",  103:"h2",
+         112:"a1",  113:"b1",  114:"c1",  115:"d1",  116:"e1",  117:"f1",  118:"g1",  119:"h1"
+    };
+	var PIECES = {
+		r: "Black Rook",
+		n: "Black Knight",
+		b: "Black Bishop",
+		q: "Black Queen",
+		k: "Black King",
+		p: "Black Pawn",
+		R: "White Rook",
+		N: "White Knight",
+		B: "White Bishop",
+		Q: "White Queen",
+		K: "White King",
+		P: "White Pawn"
+	};
 
-
-
-
-
-
-
-
-
-var getMove = function () {
+function is_digit(c) {
+        return '0123456789'.indexOf(c) !== -1;
+    }
+function describeBoard() {
+	describe(game.fen())
+}	
+function describe(fen) {
+        var tokens = fen.split(/\s+/);
+        var position = tokens[0];
+        var square = 0,
+		whitePawns = [],
+		  blackPawns = [],
+		  whiteRooks = [],
+		  blackRooks = [],
+		  whiteBishops = [],
+		  blackBishops = [],
+		  whiteKnights = [],
+		  blackKnights =[],
+		  blackQueen = [],
+		  whiteQueen = [],
+		  blackKing = [],
+		  whiteKing = []
+		//console.log(fen)
+		
+        for (var i = 0; i < position.length; i++) {
+            var piece = position.charAt(i);
+			if (piece === '/') {
+                square += 8;
+            } else if (is_digit(piece)) {
+                square += parseInt(piece);
+				//alert(square)
+            } else {
+                //console.log(PIECES[piece] + " " + SQUARES[square] )
+				
+				if(piece == "p") {
+					blackPawns.push(SQUARES[square])
+				} else if(piece == "P") {
+					whitePawns.push(SQUARES[square])
+				} else if(piece == "r") {
+					blackRooks.push(SQUARES[square])
+				} else if(piece == "R") {
+					whiteRooks.push(SQUARES[square])
+				} else if(piece == "n") {
+					blackKnights.push(SQUARES[square])
+				} else if(piece == "N") {
+					whiteKnights.push(SQUARES[square])
+				} else if(piece == "b") {
+					blackBishops.push(SQUARES[square])
+				} else if(piece == "B") {
+					whiteBishops.push(SQUARES[square])
+				} else if(piece == "q") {
+					blackQueen.push(SQUARES[square])
+				} else if(piece == "Q") {
+					whiteQueen.push(SQUARES[square])
+				} else if(piece == "k") {
+					blackKing.push(SQUARES[square])		
+				} else if(piece == "K") {
+					whiteKing.push(SQUARES[square])		
+				} 
+				
+                square++;
+            }
+        }
+		alert("White pawn(s): " + whitePawns + "\n" +
+				"Black pawn(s): " + blackPawns + "\n" +
+				"White Rook(s): " + whiteRooks + "\n" + 
+				"Black Rook(s): " + blackRooks + "\n" +
+				"White Knight(s): " + whiteKnights + "\n" +
+				"Black Knight(s): " + blackKnights + "\n" +
+				"White Bishop(s): " + whiteBishops + "\n" +
+				"Black Bishop(s): " + blackBishops + "\n" +
+				"White Queen: " + whiteQueen + "\n" +
+				"Black Queen: " + blackQueen + "\n" +
+				"White King: " + whiteKing + "\n" +
+				"Black King: " + blackKing)
+		return true
+        
+    }
+function Undo() {
+		game.undo();
+		game.undo();
+		updateStatus();
+	}
+ function MakeMove() {
+	var m = document.getElementById("move");
+	var ret = game.move(m.value)
+	//console.log(ret)
+	if (ret === null) {
+		alert("Illegal move!");
+		ClearMove()
+		return
+	}
+	updateStatus();
+	moveAudio.play()
+	//getResponseMove();
+	getMove()
+	ClearMove()
+	moveAudio.play()
 	
-    window.setTimeout(makeBestMove, 250);
+	//console.log(m.value)
+ }
+function changeLevel() {
+		newGame()
+		if (this.options[this.selectedIndex].value > 4) {
+
+			alert("Above high difficulty, things will get real slow on phones or low powered devices!")
+		}
+		var x = document.getElementById("col1");
+		if (x.options[x.selectedIndex].value == 'black') {
+
+			getMove()
+		}
+	}
+function changeBoard() {
+		newGame()
+		if (this.options[this.selectedIndex].value == 'black') {
+
+			getMove()
+		}
+	}
+function toggleBoard() {
+	var x = document.getElementById("toggle");
+
+	if (x.innerHTML === "Show Board") {
+		x.innerHTML = "Show KeyBoard";
+		var b = document.getElementById("board");
+		b.style.display = "block"
+		var c = document.getElementById("chesskeyboard");
+		c.style.display = "none"
+	} else {
+		x.innerHTML = "Show Board";
+		var b = document.getElementById("board");
+		b.style.display = "none"
+		var c = document.getElementById("chesskeyboard");
+		c.style.display = "block"
+	}
+}
+function ClearMove () {
+	moveAN = ""
+	var m = document.getElementById("move");
+	m.value = moveAN
+}
+function ButtonSingleClick (buttonobj) {
+	
+	
+	if(buttonobj.innerHTML == "Rook") {
+		moveAN+="R"
+	} else if(buttonobj.innerHTML == "Knight") {
+		moveAN+="N"
+	} else if(buttonobj.innerHTML == "Bishop") {
+		moveAN+="B"
+	} else if(buttonobj.innerHTML == "Queen") {
+		moveAN+="Q"
+	} else if(buttonobj.innerHTML == "King") {
+		moveAN+="K"
+	} else if(buttonobj.innerHTML == "Takes") {
+		moveAN+="x"
+	} else if(buttonobj.innerHTML == "Long Castle") {
+		moveAN="O-O-O"
+	} else if(buttonobj.innerHTML == "Short Castle") {
+		moveAN="O-O"
+	} else if(buttonobj.innerHTML == "Promote") {
+		moveAN+="="
+	} else {
+		moveAN+=buttonobj.innerHTML
+	}
+
+	var m = document.getElementById("move");
+	m.value = moveAN
+	
+	
+}
+var getMove = function () {
+	makeBestMove()
+    //window.setTimeout(makeBestMove, 250);
 };
 var onDragStart = function(source, piece, position, orientation) {
   if (game.game_over() === true ||
@@ -55,8 +243,8 @@ var onDrop = function(source, target) {
   if (move === null) return 'snapback';
 
   updateStatus();
-
-    window.setTimeout(makeBestMove, 250);
+makeBestMove()
+    //window.setTimeout(makeBestMove, 250);
 };
 var makeWhiteFirstRandomMove = function () {
     var moves = game.moves();
@@ -123,14 +311,6 @@ var updateStatus = function() {
     }
   }
 
-  setStatus(status);
-  
-  //createTable();
-  //updateScroll();
-
-  statusEl.html(status);
-  //fenEl.html(game.fen());
-  
   pgnEl.html(game.pgn());
   board.position(game.fen());
 };
@@ -151,59 +331,13 @@ var cfg = {
 
 // did this based on a stackoverflow answer
 // http://stackoverflow.com/questions/29493624/cant-display-board-whereas-the-id-is-same-when-i-use-chessboard-js
-setTimeout(function() {
+// setTimeout(function() {
 
-    board = ChessBoard('board', cfg);
-//    updateStatus();
-}, 0);
-
-
+    // board = ChessBoard('board', cfg);
+// //    updateStatus();
+// }, 0);
 
 
-var createTable = function() {
-
-    var pgn = game.pgn().split(" ");
-
-    var data = [];
-
-    for (i = 0; i < pgn.length; i += 3) {
-        var index = i / 3;
-        data[index] = {};
-        for (j = 0; j < 3; j++) {
-            var label = "";
-            if (j === 0) {
-                label = "moveNumber";
-            } else if (j === 1) {
-                label = "whiteMove";
-            } else if (j === 2) {
-                label = "blackMove";
-            }
-            if (pgn.length > i + j) {
-                data[index][label] = pgn[i + j];
-            } else {
-                data[index][label] = "";
-            }
-        }
-    }
-    //console.log(data)
-    $('#pgn tr').not(':first').remove();
-    var html = '';
-    for (var i = 0; i < data.length; i++) {
-                html += '<tr><td>' + data[i].moveNumber + '</td><td>'
-                + data[i].whiteMove + '</td><td>'
-                + data[i].blackMove + '</td></tr>';
-    }
-    //console.log(html)
-    $('#pgn tr').first().after(html);
-}
-
-var updateScroll = function() {
-    $('#moveTable').scrollTop($('#moveTable')[0].scrollHeight);
-}
-
-var setStatus = function(status) {
-  //document.getElementById("status").innerHTML = status;
-}
 
 
 
@@ -232,7 +366,7 @@ var newGame = function() {
 
 
 function loadEngine() {
-  var engine = {ready: false, kill: false, waiting: true, depth: 10, lastnodes: 0};
+  var engine = {ready: false, kill: false, waiting: true, depth: sdepth, lastnodes: 0};
   var wasmSupported = typeof WebAssembly === 'object' && WebAssembly.validate(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
   if (typeof(Worker) === "undefined") return engine;
   var workerData = new Blob([atob(wasmSupported ? sfWasm : sf)], { type: "text/javascript" });
@@ -315,7 +449,7 @@ function makeEngineMove (makeMove) {
 		
 	  }
 	},function info(depth, score, pv) {
-        if(depth == 10) {
+        if(depth == sdepth) {
 			console.log(score)
 			//document.getElementById("cpscore").innerHTML = " CP score: " + score/100;
 		}
@@ -323,8 +457,21 @@ function makeEngineMove (makeMove) {
 	
 	
 }
+
+
+var input = document.getElementById("move");
+    input.addEventListener("keypress", function(event) {
+      if (event.keyCode === 13) {
+       event.preventDefault();
+       document.getElementById("submit").click();
+      }
+    });
+
+let myLink = document.getElementById('meta')
+myLink.addEventListener('auxclick', function(e) {
+  if (e.button == 1) {
+    MakeMove()
+  }
+})
 _engine = loadEngine();
-
-
-
-
+newGame()
