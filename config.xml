@@ -10,7 +10,7 @@
   <name>Blindfold Chess</name>
   <icon src="chess_big.png" />	
   <description>
-      Play chess with engine using screen reader option.
+      Play blindfold chess against stockfish engine.
   </description>
 
   <author href="https://tryit.in" email="vishwas.ib@gmail.com">
