@@ -171,7 +171,7 @@ function toggleBoard() {
 	var x = document.getElementById("toggle");
 
 	if (x.innerHTML === "Show Board") {
-		x.innerHTML = "Show KeyBoard";
+		x.innerHTML = "Hide Board";
 		var b = document.getElementById("board");
 		b.style.display = "block"
 		var c = document.getElementById("chesskeyboard");
