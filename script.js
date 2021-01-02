@@ -243,7 +243,8 @@ var onDrop = function(source, target) {
   if (move === null) return 'snapback';
 
   updateStatus();
-makeBestMove()
+	makeBestMove();
+	moveAudio.play();
     //window.setTimeout(makeBestMove, 250);
 };
 var makeWhiteFirstRandomMove = function () {
