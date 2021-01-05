@@ -9,7 +9,7 @@ var _wname = "White", _bname = "Black", _color = 0, _bodyScale = 1;
 var _nncache = null;
 var moveAN = ""
 const moveAudio = new Audio('sounds/Move.mp3');
-var board,
+var myboard,
   game = new Chess(),
   pgnEl = $('#pgn'),
   toggleEI = $('#toggle'),
@@ -145,9 +145,15 @@ function Undo() {
 	getMove()
 	ClearMove()
 	moveAudio.play()
+	if (!isTouchDevice()) {
+		document.getElementById("move").focus();
+	}
 	
 	//console.log(m.value)
  }
+ function isTouchDevice () {
+    return 'ontouchstart' in document.documentElement
+  }
 function changeLevel() {
 		newGame()
 		if (this.options[this.selectedIndex].value > 4) {
@@ -172,13 +178,13 @@ function toggleBoard() {
 
 	if (x.innerHTML === "Show Board") {
 		x.innerHTML = "Hide Board";
-		var b = document.getElementById("board");
+		var b = document.getElementById("myboard");
 		b.style.display = "block"
 		var c = document.getElementById("chesskeyboard");
 		c.style.display = "none"
 	} else {
 		x.innerHTML = "Show Board";
-		var b = document.getElementById("board");
+		var b = document.getElementById("myboard");
 		b.style.display = "none"
 		var c = document.getElementById("chesskeyboard");
 		c.style.display = "block"
@@ -251,7 +257,7 @@ var makeWhiteFirstRandomMove = function () {
     var moves = game.moves();
 	var move = moves[Math.floor(Math.random() * moves.length)];
 	game.move(move);
-    board.position(game.fen());
+    myboard.position(game.fen());
 	updateStatus();
    
     if (game.game_over()) {
@@ -268,7 +274,7 @@ var makeBestMove = function () {
 	
 	
 	makeEngineMove(1)
-    board.position(game.fen());
+    myboard.position(game.fen());
 	updateStatus();
    
     if (game.game_over()) {
@@ -281,7 +287,7 @@ var makeBestMove = function () {
 // update the board position after the piece snap
 // for castling, en passant, pawn promotion
 var onSnapEnd = function() {
-    board.position(game.fen());
+    myboard.position(game.fen());
 };
 
 var updateStatus = function() {
@@ -313,7 +319,7 @@ var updateStatus = function() {
   }
 
   pgnEl.html(game.pgn());
-  board.position(game.fen());
+  myboard.position(game.fen());
 };
 
 var cfg = {
@@ -347,7 +353,7 @@ var takeBack = function() {
     if (game.turn() != "w") {
         game.undo();
     }
-    board.position(game.fen());
+    myboard.position(game.fen());
     updateStatus();
 }
 
@@ -361,7 +367,7 @@ var newGame = function() {
       onSnapEnd: onSnapEnd,
       orientation: elem.options[elem.selectedIndex].value
     };
-    board = ChessBoard('board', cfg);
+    myboard = ChessBoard('myboard', cfg);
     updateStatus();
 }
 
@@ -443,7 +449,7 @@ function makeEngineMove (makeMove) {
 
 		  // illegal move
 		  if (move === null) return 'snapback'
-		  board.position(game.fen())
+		  myboard.position(game.fen())
 		  updateStatus()
 		  //console.log(getStaticEvalList(game.fen()))
 		}
