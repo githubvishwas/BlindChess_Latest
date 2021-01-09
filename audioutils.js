@@ -126,6 +126,7 @@ if (audioSupport == 1) {
 			for (let j = 0, len = event.results[i].length; j < len; j++) {
 				
 				let transcript1 = event.results[i][j].transcript;
+				transcript1 = transcript1.replace(/,/g,'')
 				alert(transcript1)
 				all_transcripts.push(transcript1)
 			}
