@@ -139,9 +139,9 @@ if (audioSupport == 1) {
 				var arrayLength = audio_keys.length;
 				mv1 = mv;
 				for (var i = 0; i < arrayLength; i++) {
-					alert(mv1 + " " + audio_keys[i])
 					if (mv1.includes(audio_keys[i])) {
 						mv = mv.replace(audio_keys[i],audio_move_map.get(audio_keys[i]));
+						alert(mv)
 						var ret1 = game.move(mv);
 						if (ret1 === null) {
 							moveFound = 0;
@@ -151,6 +151,7 @@ if (audioSupport == 1) {
 						}
 					}
 				}
+				
 			} else {
 				moveFound = 1;
 				break;
