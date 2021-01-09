@@ -87,7 +87,7 @@ if (audioSupport == 1) {
 	speechRecognitionList.addFromString(grammar, 1);
 	//recognition.grammars = speechRecognitionList;
 	recognition.lang = navigator.languages[0];
-	recognition.interimResults = true;
+	recognition.interimResults = false;
 	recognition.maxAlternatives = 10;
 	
 	audio_keys = Array.from( audio_move_map.keys() );
@@ -120,14 +120,11 @@ if (audioSupport == 1) {
 			return
 		}
 
-		alert("res length: " + event.results.length)
+		
 		for (let i = 0, len = event.results.length; i < len; i++) {
-			alert("res " + i + " length: " + event.results[i].length)
 			for (let j = 0, len = event.results[i].length; j < len; j++) {
-				
 				let transcript1 = event.results[i][j].transcript;
 				transcript1 = transcript1.replace(/,/g,'')
-				alert(transcript1)
 				all_transcripts.push(transcript1)
 			}
 		}
@@ -142,16 +139,17 @@ if (audioSupport == 1) {
 				var arrayLength = audio_keys.length;
 				mv1 = mv;
 				for (var i = 0; i < arrayLength; i++) {
+					alert(mv1 + " " + audio_keys[i])
 					if (mv1.includes(audio_keys[i])) {
 						mv = mv.replace(audio_keys[i],audio_move_map.get(audio_keys[i]));
+						var ret1 = game.move(mv);
+						if (ret1 === null) {
+							moveFound = 0;
+						} else {
+							moveFound = 1;
+							break;
+						}
 					}
-				}
-				var ret1 = game.move(mv);
-				if (ret1 === null) {
-					moveFound = 0;
-				} else {
-					moveFound = 1;
-					break;
 				}
 			} else {
 				moveFound = 1;
