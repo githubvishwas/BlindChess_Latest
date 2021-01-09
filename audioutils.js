@@ -105,7 +105,13 @@ if (audioSupport == 1) {
 
 		// Get a transcript of what was said.
 
-
+		var chk_transcripts = []
+		for (let i = 0, len = event.results.length; i < len; i++) {
+			for (let j = 0, len = event.results[i].length; j < len; j++) {
+				chk_transcripts.push("i: " + i + "j: " + j + " -> " + event.results[i][j].transcript);
+			}
+		}
+		alert(chk_transcripts)
 		var transcript = event.results[current][0].transcript;
 		var all_transcripts = []	
 		// Add the current transcript to the contents of our Note.
@@ -169,7 +175,8 @@ if (audioSupport == 1) {
 			document.getElementById("move").focus();
 		}
 		}
-	};	
+	};
+		
 	recognition.onstart = function() { 
 	  var b1 = document.getElementById("start-record-btn");
 	   b1.style.color = 'green'
