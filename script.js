@@ -17,7 +17,7 @@ var myboard,
   colorsEI = $('#col1');
   
   var elem = document.getElementById('col1');
-  
+
   //console.log(elem.selectedIndex);
 //document.getElementById("status").innerHTML = "this is new code";
 

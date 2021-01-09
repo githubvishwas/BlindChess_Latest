@@ -86,7 +86,7 @@ if (audioSupport == 1) {
 	var speechRecognitionList = new SpeechGrammarList();
 	speechRecognitionList.addFromString(grammar, 1);
 	//recognition.grammars = speechRecognitionList;
-	recognition.lang = 'en-US';
+	recognition.lang = navigator.languages[0];
 	recognition.interimResults = true;
 	recognition.maxAlternatives = 10;
 	
@@ -109,18 +109,6 @@ if (audioSupport == 1) {
 
 		// Get a transcript of what was said.
 
-		var interim_transcript = '';
-		var final_transcript = '';
-
-		for (var i = event.resultIndex; i < event.results.length; ++i) {
-			// Verify if the recognized text is the last with the isFinal property
-			if (event.results[i].isFinal) {
-				final_transcript += event.results[i][0].transcript;
-			} else {
-				interim_transcript += event.results[i][0].transcript;
-			}
-		}
-		alert(final_transcript + "\n" + interim_transcript)
 		var transcript = event.results[current][0].transcript;
 		var all_transcripts = []	
 		// Add the current transcript to the contents of our Note.
@@ -129,24 +117,23 @@ if (audioSupport == 1) {
 		var mobileRepeatBug = (current == 1 && transcript == event.results[0][0].transcript);
 		//mobileRepeatBug = 0;
 		if(!mobileRepeatBug) {
-			//alert("results: " + event.results)
-			var resstr = ""
-			for (let i = 0, len = event.results.length; i < len; i++) {
-			let transcript1 = event.results[i][0].transcript;
+			return
+		}
 
-			//resstr += transcript1 + ",";
+		alert("res length: " + event.results.length)
+		for (let i = 0, len = event.results.length; i < len; i++) {
+			alert("res " + i + " length: " + event.results[i].length)
+			alert(event.results[i].length)
 			for (let j = 0, len = event.results[i].length; j < len; j++) {
-				let transcript2 = event.results[i][j].transcript;
-				all_transcripts.push(transcript2)
-				resstr += transcript2 + ", " + event.results[i][j].confidence + " ,";
+				let transcript1 = event.results[i][j].transcript;
+				all_transcripts.push(transcript1)
 			}
 		}
-		//alert("Result list: " + resstr)
-
+		
 		var movefound = 0
-		//console.log(ret)
+		
 		for (index = 0; index < all_transcripts.length; index++) { 
-			console.log(all_transcripts[index]); 
+			
 			mv = all_transcripts[index].toLowerCase().replace(/\s/g, '');
 			var ret = game.move(mv);
 			if (ret === null) {
@@ -159,7 +146,6 @@ if (audioSupport == 1) {
 				}
 				var ret1 = game.move(mv);
 				if (ret1 === null) {
-				//readOutLoud("Sorry!");
 					moveFound = 0;
 				} else {
 					moveFound = 1;
@@ -183,7 +169,7 @@ if (audioSupport == 1) {
 		if (!isTouchDevice()) {
 			document.getElementById("move").focus();
 		}
-		}
+
 	};
 		
 	recognition.onstart = function() { 
