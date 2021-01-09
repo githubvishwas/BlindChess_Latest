@@ -226,6 +226,7 @@ if (audioSupport == 1) {
 		// Get a transcript of what was said.
 
 		var transcript = event.results[current][0].transcript;
+		alert(transcript)
 		var all_transcripts = []	
 		// Add the current transcript to the contents of our Note.
 		// There is a weird bug on mobile, where everything is repeated twice.
@@ -258,6 +259,7 @@ if (audioSupport == 1) {
 					if (mv1.includes(audio_keys[i])) {
 						mv = mv.replace(audio_keys[i],audio_move_map.get(audio_keys[i]));
 						alert(mv)
+						break;
 					}
 				}
 				var ret1 = game.move(mv);
