@@ -243,7 +243,6 @@ if (audioSupport == 1) {
 		for (let i = 0, len = event.results.length; i < len; i++) {
 			for (let j = 0, len = event.results[i].length; j < len; j++) {
 				let transcript1 = event.results[i][j].transcript;
-				transcript1 = transcript1.replace(/,/g,'')
 				all_transcripts.push(transcript1)
 			}
 		}
@@ -258,10 +257,11 @@ if (audioSupport == 1) {
 				var arrayLength = audio_keys.length;
 				mv1 = mv;
 				for (var i = 0; i < arrayLength; i++) {
-					if (mv1.includes(audio_keys[i])) {
-						mv = mv.replace(audio_keys[i],audio_move_map.get(audio_keys[i]));
-						//alert(mv)
+					if (mv1 == audio_keys[i]) {
+						mv = audio_move_map.get(audio_keys[i]);
 						break;
+					} else if (mv1.includes(audio_keys[i])) {
+						mv = mv.replace(audio_keys[i],audio_move_map.get(audio_keys[i]));
 					}
 				}
 				var ret1 = game.move(mv);
@@ -278,7 +278,7 @@ if (audioSupport == 1) {
 			}
 		} 
 		if (moveFound == 0) {
-			alert("Illegal move! We heard you as " + all_transcripts + " and could not interpret it\nBest confidence level was " + event.results[0][0].confidence);
+			alert("Illegal move! We heard you as " + all_transcripts + "\nBest confidence level was " + event.results[0][0].confidence);
 			ClearMove()
 			return;
 		}
