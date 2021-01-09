@@ -79,13 +79,129 @@ if (audioSupport == 1) {
 			["detects","dx"]
 		]
 	);
-	var moves = [ 'knight' , 'bishop' , 'queen', 'king', 'side', 'shortcastle', 'longcastle', 'takes', 'check', 'checkmate', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', '1', '2', '3', '4', '5', '6', '7', '8','anna','belia','ceasar','david','eva','felix','gustav','hector','eins','zwei','drei','vier','fnf','sechs','sieben','acht'];
+	var moves = [ 'knight' , 
+	'bishop' , 
+	'queen', 
+	'king', 
+	'side', 
+	'shortcastle', 
+	'longcastle', 
+	'takes', 
+	'check', 
+	'checkmate', 
+	'a', 
+	'b', 
+	'c', 
+	'd', 
+	'e', 
+	'f', 
+	'g', 
+	'h', 
+	'1', 
+	'2', 
+	'3', 
+	'4', 
+	'5', 
+	'6', 
+	'7', 
+	'8',
+	'anna',
+	'belia',
+	'ceasar',
+	'david',
+	'eva',
+	'felix',
+	'gustav',
+	'hector',
+	'eins',
+	'zwei',
+	'drei',
+	'vier',
+	'fnf',
+	'sechs',
+	'sieben',
+	'acht',
+	'a1',
+	'a2',
+	'a3',
+	'a4',
+	'a5',
+	'a6',
+	'a7',
+	'a8',
+	'b1',
+	'b2',
+	'b3',
+	'b4',
+	'b5',
+	'b6',
+	'b7',
+	'b8',
+	'c1',
+	'c2',
+	'c3',
+	'c4',
+	'c5',
+	'c6',
+	'c7',
+	'c8',
+	'd1',
+	'd2',
+	'd3',
+	'd4',
+	'd5',
+	'd6',
+	'd7',
+	'd8',
+	'e1',
+	'e2',
+	'e3',
+	'e4',
+	'e5',
+	'e6',
+	'e7',
+	'e8',
+	'f1',
+	'f2',
+	'f3',
+	'f4',
+	'f5',
+	'f6',
+	'f7',
+	'f8',
+	'g1',
+	'g2',
+	'g3',
+	'g4',
+	'g5',
+	'g6',
+	'g7',
+	'g8',
+	'h1',
+	'h2',
+	'h3',
+	'h4',
+	'h5',
+	'h6',
+	'h7',
+	'h8'];
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
 	var grammar = '#JSGF V1.0; grammar moves; public <move> = ' + moves.join(' | ') + ' ;'
 
 	var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 	var speechRecognitionList = new SpeechGrammarList();
 	speechRecognitionList.addFromString(grammar, 1);
-	//recognition.grammars = speechRecognitionList;
+	recognition.grammars = speechRecognitionList;
 	recognition.lang = navigator.languages[0];
 	recognition.interimResults = false;
 	recognition.maxAlternatives = 10;
@@ -141,7 +257,7 @@ if (audioSupport == 1) {
 				for (var i = 0; i < arrayLength; i++) {
 					if (mv1.includes(audio_keys[i])) {
 						mv = mv.replace(audio_keys[i],audio_move_map.get(audio_keys[i]));
-						alert(mv)
+						//alert(mv)
 						var ret1 = game.move(mv);
 						if (ret1 === null) {
 							moveFound = 0;
