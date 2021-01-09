@@ -257,8 +257,7 @@ if (audioSupport == 1) {
 				for (var i = 0; i < arrayLength; i++) {
 					if (mv1.includes(audio_keys[i])) {
 						mv = mv.replace(audio_keys[i],audio_move_map.get(audio_keys[i]));
-						//alert(mv)
-						
+						alert(mv)
 					}
 				}
 				var ret1 = game.move(mv);
