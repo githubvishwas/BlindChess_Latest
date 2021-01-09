@@ -47,6 +47,8 @@ if (audioSupport == 1) {
 			["take","x"],
 			["ate","8"],
 			["de","d"],
+			["fy","5"],
+			["fi","5"],
 			["file","5"],
 			["define","d5"],
 			["defile","d5"],
@@ -226,7 +228,7 @@ if (audioSupport == 1) {
 		// Get a transcript of what was said.
 
 		var transcript = event.results[current][0].transcript;
-		alert(transcript)
+		//alert(transcript)
 		var all_transcripts = []	
 		// Add the current transcript to the contents of our Note.
 		// There is a weird bug on mobile, where everything is repeated twice.
@@ -258,7 +260,7 @@ if (audioSupport == 1) {
 				for (var i = 0; i < arrayLength; i++) {
 					if (mv1.includes(audio_keys[i])) {
 						mv = mv.replace(audio_keys[i],audio_move_map.get(audio_keys[i]));
-						alert(mv)
+						//alert(mv)
 						break;
 					}
 				}
