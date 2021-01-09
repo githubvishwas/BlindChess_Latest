@@ -32,7 +32,8 @@
 	 <script src="jquery3.5.1/jquery.min.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="bootstrap-4.3.1-dist/js/bootstrap.min.js"></script>
-	
+	<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
     
 </head>
 
@@ -91,7 +92,7 @@
 			
 			
 			<button type="button" class="btn btn-default" style="width: 15%">Your Move: </button>
-
+			
 			<input type="text" id="move" move="move" required
 									   minlength="2" maxlength="5" size="10" style="width: 24%">
 			
@@ -106,14 +107,16 @@
 		</div>	
 		<div id="myboard" style="width: 350px;display:none" ;></div>
 		<p><span id="pgn" style="padding-left: 2%"></span></p>
-		<button type="button" class="btn btn-default" style="width: 50%;margin-top: 2%" id="describe" onclick = describeBoard();>Describe Board</button>
-		<button type="button" class="btn btn-default" style="width: 45%;margin-top: 2%" id="toggle" onclick = "toggleBoard()";>Show Board</button>
+		<button type="button" class="btn btn-default" style="width: 40%;margin-top: 2%" id="describe" onclick = describeBoard();>Describe Board</button>
+		<button type="button" class="btn btn-default" style="width: 40%;margin-top: 2%" id="toggle" onclick = "toggleBoard()";>Show Board</button>
+		<i style='font-size:20px;color:red;' class='fas' id="start-record-btn">&#xf130;</i>
 		<!-- <p>© 2020 vishwas.ib@gmail.com. Powered by <a href="https://chessboardjs.com"> Chessboard.js</a> & <a href="https://github.com/jhlywa/chess.js"> Chess.js</a></p>						 -->
 	</div>
 	
     <script src="js/chessboard-1.0.0.min.js"></script>
 	<script src="js/chess.js"></script>
 	<script src="sf.js"></script>
+	<script src="audioutils.js"></script>
 	<!-- <script src="staticeval.js"></script> -->
 	<!-- <script src="squares.js"></script> -->
 	<!-- <link rel="stylesheet" href="css/chessboard-arrows.css"> -->
