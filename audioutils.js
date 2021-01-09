@@ -116,16 +116,17 @@ if (audioSupport == 1) {
 		// There is no official solution so far so we have to handle an edge case.
 		var mobileRepeatBug = (current == 1 && transcript == event.results[0][0].transcript);
 		//mobileRepeatBug = 0;
-		if(!mobileRepeatBug) {
+		if(mobileRepeatBug) {
 			return
 		}
 
 		alert("res length: " + event.results.length)
 		for (let i = 0, len = event.results.length; i < len; i++) {
 			alert("res " + i + " length: " + event.results[i].length)
-			alert(event.results[i].length)
 			for (let j = 0, len = event.results[i].length; j < len; j++) {
+				
 				let transcript1 = event.results[i][j].transcript;
+				alert(transcript1)
 				all_transcripts.push(transcript1)
 			}
 		}
