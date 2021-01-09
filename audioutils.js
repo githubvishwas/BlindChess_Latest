@@ -85,7 +85,7 @@ if (audioSupport == 1) {
 	var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 	var speechRecognitionList = new SpeechGrammarList();
 	speechRecognitionList.addFromString(grammar, 1);
-	recognition.grammars = speechRecognitionList;
+	//recognition.grammars = speechRecognitionList;
 	recognition.lang = 'en-US';
 	recognition.interimResults = false;
 	recognition.maxAlternatives = 10;
@@ -108,7 +108,7 @@ if (audioSupport == 1) {
 		var chk_transcripts = []
 		for (let i = 0, len = event.results.length; i < len; i++) {
 			for (let j = 0, len = event.results[i].length; j < len; j++) {
-				chk_transcripts.push("i: " + i + "j: " + j + " -> " + event.results[i][j].transcript);
+				chk_transcripts.push("i: " + i + " j: " + j + " -> " + event.results[i][j].transcript);
 			}
 		}
 		alert(chk_transcripts)
