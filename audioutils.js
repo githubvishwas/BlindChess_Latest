@@ -258,14 +258,15 @@ if (audioSupport == 1) {
 					if (mv1.includes(audio_keys[i])) {
 						mv = mv.replace(audio_keys[i],audio_move_map.get(audio_keys[i]));
 						//alert(mv)
-						var ret1 = game.move(mv);
-						if (ret1 === null) {
-							moveFound = 0;
-						} else {
-							moveFound = 1;
-							break;
-						}
+						
 					}
+				}
+				var ret1 = game.move(mv);
+				if (ret1 === null) {
+					moveFound = 0;
+				} else {
+					moveFound = 1;
+					break;
 				}
 				
 			} else {
