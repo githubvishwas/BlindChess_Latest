@@ -87,7 +87,7 @@ if (audioSupport == 1) {
 	speechRecognitionList.addFromString(grammar, 1);
 	//recognition.grammars = speechRecognitionList;
 	recognition.lang = 'en-US';
-	recognition.interimResults = false;
+	recognition.interimResults = true;
 	recognition.maxAlternatives = 10;
 	
 	audio_keys = Array.from( audio_move_map.keys() );
@@ -95,6 +95,10 @@ if (audioSupport == 1) {
 	// When true, the silence period is longer (about 15 seconds),
 	// allowing us to keep recording even when the user pauses. 
 	recognition.continuous = true;
+	// Fired when an error happens with the speech recognition
+	recognition.onerror = function(event) {
+		return;
+	};
 	// This block is called every time the Speech APi captures a line. 
 	recognition.onresult = function(event) {
 
@@ -105,13 +109,18 @@ if (audioSupport == 1) {
 
 		// Get a transcript of what was said.
 
-		var chk_transcripts = []
-		for (let i = 0, len = event.results.length; i < len; i++) {
-			for (let j = 0, len = event.results[i].length; j < len; j++) {
-				chk_transcripts.push("i: " + i + " j: " + j + " -> " + event.results[i][j].transcript);
+		var interim_transcript = '';
+		var final_transcript = '';
+
+		for (var i = event.resultIndex; i < event.results.length; ++i) {
+			// Verify if the recognized text is the last with the isFinal property
+			if (event.results[i].isFinal) {
+				final_transcript += event.results[i][0].transcript;
+			} else {
+				interim_transcript += event.results[i][0].transcript;
 			}
 		}
-		alert(chk_transcripts)
+		alert(final_transcript + "\n" + interim_transcript)
 		var transcript = event.results[current][0].transcript;
 		var all_transcripts = []	
 		// Add the current transcript to the contents of our Note.
