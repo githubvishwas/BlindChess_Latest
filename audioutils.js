@@ -248,12 +248,13 @@ if (audioSupport == 1) {
 		}
 		
 		var movefound = 0
-		
+		var options_tried = []
 		for (index = 0; index < all_transcripts.length; index++) { 
 			
 			mv = all_transcripts[index].toLowerCase().replace(/\s/g, '');
 			var ret = game.move(mv);
 			if (ret === null) {
+				options_tried.push(mv)
 				var arrayLength = audio_keys.length;
 				mv1 = mv;
 				for (var i = 0; i < arrayLength; i++) {
@@ -266,6 +267,7 @@ if (audioSupport == 1) {
 				}
 				var ret1 = game.move(mv);
 				if (ret1 === null) {
+					options_tried.push(mv)
 					moveFound = 0;
 				} else {
 					moveFound = 1;
@@ -278,7 +280,7 @@ if (audioSupport == 1) {
 			}
 		} 
 		if (moveFound == 0) {
-			alert("Illegal move! We heard you as " + all_transcripts + "\nBest confidence level was " + event.results[0][0].confidence);
+			alert("Illegal move! We tried " + options_tried + "\nBest confidence level was " + event.results[0][0].confidence);
 			ClearMove()
 			return;
 		}
