@@ -87,26 +87,27 @@
 			<button type="button"  class="btn btn-default" style="width: 11.5%;margin-top: 1%" onclick = ButtonSingleClick(this)>8</button>
 			
 			                                                      
-			<button type="button"  class="btn btn-default" style="width: 24%;margin-top: 2%" onclick = ButtonSingleClick(this)>Short Castle</button>
-			<button type="button"  class="btn btn-default" style="width: 24%;margin-top: 2%" onclick = ButtonSingleClick(this)>Long Castle</button>
+			<button type="button"  class="btn btn-default" style="width: 30%;margin-top: 2%" onclick = ButtonSingleClick(this)>Short Castle</button>
+			<button type="button"  class="btn btn-default" style="width: 30%;margin-top: 2%" onclick = ButtonSingleClick(this)>Long Castle</button>
+			<button type="button" class="btn btn-default"  style="width: 30%;margin-top: 2%" id="promote" onclick = ButtonSingleClick(this);>Promote</button>                   
 			
 			
-			<button type="button" class="btn btn-default" style="width: 15%">Your Move: </button>
-			
-			<input type="text" id="move" move="move" required
-									   minlength="2" maxlength="5" size="10" style="width: 24%">
-			
-			 
-			<button type="button" class="btn btn-default"  style="width: 50%;margin-top: 2%" id="promote" onclick = ButtonSingleClick(this);>Promote</button>                                                        
-			<button type="button"  class="btn btn-default" style="width: 47%;margin-top: 2%" id="submit"  onclick = MakeMove()>Play Move</button>
-			
-			                                                       
-			<button type="button"  class="btn btn-default" style="width: 50%;margin-top: 2%" onclick = ClearMove()>Clear Move</button>
-			<button type="button"  class="btn btn-default" style="width: 47%;margin-top: 2%" id="undo" onclick = Undo()>Undo</button>
 			
 		</div>	
 		<div id="myboard" style="width: 350px;display:none" ;></div>
 		<p><span id="pgn" style="padding-left: 2%"></span></p>
+		<button type="button" class="btn btn-default" style="width: 30%">Your Move: </button>
+			
+		<input type="text" id="move" move="move" required
+								   minlength="2" maxlength="5" size="10" style="width: 30%">
+		
+		 
+											 
+		<button type="button"  class="btn btn-default" style="width: 30%;margin-top: 2%" id="submit"  onclick = MakeMove()>Play Move</button>
+		
+															   
+		<button type="button"  class="btn btn-default" style="width: 50%;margin-top: 2%" onclick = ClearMove()>Clear Move</button>
+		<button type="button"  class="btn btn-default" style="width: 47%;margin-top: 2%" id="undo" onclick = Undo()>Undo</button>
 		<button type="button" class="btn btn-default" style="width: 40%;margin-top: 2%" id="describe" onclick = describeBoard();>Describe Board</button>
 		<button type="button" class="btn btn-default" style="width: 40%;margin-top: 2%" id="toggle" onclick = "toggleBoard()";>Show Board</button>
 		<i style='font-size:20px;color:red;margin-left: 3%' class='fas' id="start-record-btn">&#xf130;</i>
