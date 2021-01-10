@@ -228,9 +228,7 @@ if (audioSupport == 1) {
 		// Get a transcript of what was said.
 
 		var transcript = event.results[current][0].transcript;
-		for (let i = 0, len = transcript.length; i < len; i++) {
-			alert(transcript[i] + "-")
-		}
+		
 		var all_transcripts = []	
 		// Add the current transcript to the contents of our Note.
 		// There is a weird bug on mobile, where everything is repeated twice.
