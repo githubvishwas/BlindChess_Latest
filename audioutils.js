@@ -302,6 +302,29 @@ if (audioSupport == 1) {
 					}
 				} 
 			}
+			var possibleMoves = game.moves()
+			for (let i = 0, len = options_tried.length; i < len; i++) {
+				for (let j = 0, len = possibleMoves.length; j < len; j++) {
+					if (options_tried[i].includes(possibleMoves[j]) || possibleMoves[j].includes(options_tried[i])) {
+						mv = possibleMoves[j];
+						var ret1 = game.move(mv);
+						if (ret1 === null) {
+							options_tried.push(mv)
+							moveFound = 0;
+						} else {
+							moveFound = 1;
+							updateStatus();
+							getMove();
+							ClearMove()
+							moveAudio.play()
+							if (!isTouchDevice()) {
+								document.getElementById("move").focus();
+							}
+							return
+						}
+					} 
+				}
+			}
 			alert("Illegal move! We tried " + options_tried + "\nBest confidence level was " + event.results[0][0].confidence);
 			ClearMove()
 			return;
