@@ -263,7 +263,7 @@ if (audioSupport == 1) {
 						break;
 					} else if (mv1.includes(audio_keys[i])) {
 						mv = mv.replace(audio_keys[i],audio_move_map.get(audio_keys[i]));
-					}
+					} 
 				}
 				var ret1 = game.move(mv);
 				if (ret1 === null) {
@@ -280,6 +280,28 @@ if (audioSupport == 1) {
 			}
 		} 
 		if (moveFound == 0) {
+			var arrayLength = audio_keys.length;
+			mv1 = mv;
+			for (var i = 0; i < arrayLength; i++) {
+				if (soundex(mv1) == soundex(audio_keys[i])) {
+					mv = audio_move_map.get(audio_keys[i]);
+					var ret1 = game.move(mv);
+					if (ret1 === null) {
+						options_tried.push(mv)
+						moveFound = 0;
+					} else {
+						moveFound = 1;
+						updateStatus();
+						getMove();
+						ClearMove()
+						moveAudio.play()
+						if (!isTouchDevice()) {
+							document.getElementById("move").focus();
+						}
+						return
+					}
+				} 
+			}
 			alert("Illegal move! We tried " + options_tried + "\nBest confidence level was " + event.results[0][0].confidence);
 			ClearMove()
 			return;
