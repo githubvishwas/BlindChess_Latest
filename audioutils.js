@@ -327,6 +327,9 @@ if (audioSupport == 1) {
 			}
 			alert("Illegal move! We tried " + options_tried + "\nBest confidence level was " + event.results[0][0].confidence);
 			ClearMove()
+			if (!isTouchDevice()) {
+				document.getElementById("move").focus();
+			}
 			return;
 		}
 		updateStatus();
